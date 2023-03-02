@@ -10,7 +10,7 @@ const button1 = document.querySelector("#button1");
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const text = document.querySelector("#text");
-const xtext = document.querySelector("#xpText");
+const xpText = document.querySelector("#xpText");
 const healthText = document.querySelector("#healthText");
 const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
@@ -78,11 +78,30 @@ const locations = [
         "button text": ["Attack", "Dodge", "Run"],
         "button function": [attack, dodge, goTown],
         text: "You are fighting a monster."
+    },
+    {
+        name: "kill monster",
+        "button text": ["Go to town square", "Go to town square", "Go to town square"],
+        "button function": [goTown, goTown, goTown],
+        text: "The monster screams >>'Arg!'<< as it dies. You gain expereince points and find gold."
+    },
+    {
+        name: "lose",
+        "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
+        "button function": [restart, restart, restart],
+        text: "You defeat the dragon! >>YOU WIN THE GAME!!!<<"
+    },
+    {
+        name: "win",
+        "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
+        "button function": [restart, restart, restart],
+        text: "💀You die.💀"
     }
 
 ];
 
 function update(location){
+    monsterStats.style.display = "none"; // monstersStats box disappears when moving locations
     button1.innerText = location["button text"][0];
     button2.innerText = location["button text"][1];
     button3.innerText = location["button text"][2];
@@ -166,7 +185,7 @@ function fightDragon(){
 }
 
 function goFight(){
-    update(locations[locations.length-1]) //locations.length-1 last element -> name:figh etc.
+    update(locations[3]) 
     monsterHealth = monsters[fighting].health;
     monsterStats.style.display = "block";
     monsterNameText.innerText = monsters[fighting].name;
@@ -180,8 +199,49 @@ function attack(){
     monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random()*xp)+1;
     healthText.innerText = health;
     monsterHealthText.innerText = monsterHealth;
+
+    if(health <= 0){
+        lose();
+    }
+    else if(monsterHealth <= 0){
+        /* if(fighting===2) {
+            windGame();
+        }else {
+            defeatMonster();
+        } */
+        fighting === 2 ? winGame() : defeatMonster();
+    } 
 }
 
 function dodge(){
+    text.innerTExt = `You dodge the attack from the ${monsters[fighting].name}.`
+}
 
+function defeatMonster(){
+    gold += Math.floor(monsters[fighting].level * 6.7)
+    xp = monsters[fighting].level;
+    goldText.innerText = gold;
+    xpText.innerText = xp;
+    update(locations[4]);
+}
+
+function lose(){
+    update(locations[5]);
+
+}
+
+function winGame(){
+    update(locations[6])
+}
+
+function restart(){
+    xp = 0;
+    health = 100;
+    gold = 50;
+    currentWeapon = 0;
+    inventory = [ "stick"];
+    goldText.innerText = gold;
+    healthText.innerText = health;
+    xpText.innerText = xp;
+    goTown();
 }
