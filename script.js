@@ -89,13 +89,14 @@ const locations = [
         name: "lose",
         "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
         "button function": [restart, restart, restart],
-        text: "You defeat the dragon! >>YOU WIN THE GAME!!!<<"
+        text: "💀You die.💀"
+        
     },
     {
         name: "win",
         "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
         "button function": [restart, restart, restart],
-        text: "💀You die.💀"
+        text: "You defeat the dragon! >>YOU WIN THE GAME!!!<<"
     }
 
 ];
@@ -135,7 +136,7 @@ function buyHealth(){
         gold -= 10;
         health += 10;
         goldText.innerText = gold;
-        healthText.innerText = heal;   
+        healthText.innerText = health;   
     } 
     else goldText.innerText = "You do not have enough gold to buy health."
 }
@@ -194,8 +195,14 @@ function goFight(){
 
 function attack(){
     text.innerText = `The ${monsters[fighting].name} attacks.`
-    text.innerText += `You attack it with your ${weapons[currentWeapon].name}.`
-    health -= monsters[fighting].level;
+    text.innerText += `You attack it with your ${weapons[currentWeapon].name}.`;
+
+    if(isMonsterHit()){ //true if "hitrate" is 80% or health less 20
+        health -= getMonsterAttackValue(monsters[fighting].level);
+    }
+    else {
+        text.innerText = "You miss."
+    }
     monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random()*xp)+1;
     healthText.innerText = health;
     monsterHealthText.innerText = monsterHealth;
@@ -211,6 +218,24 @@ function attack(){
         } */
         fighting === 2 ? winGame() : defeatMonster();
     } 
+
+    if(Math.random()<=0.1 && inventory.length > 1){ // low probabillity to break current weapon
+        text.innerText += `>>Your ${inventory.pop()} breaks!<<`
+        currentWeapon--;
+    }
+}
+
+function getMonsterAttackValue(level){
+    let hit = (level * 5) - (Math.floor(Math.random() * xp))
+    // high xp is good, high level is bad 
+    console.log(hit);
+
+    return hit;
+}
+
+function isMonsterHit(){
+    return Math.random() > 0.2 || health < 20
+    // 80% of time there is goining to be a hit
 }
 
 function dodge(){
